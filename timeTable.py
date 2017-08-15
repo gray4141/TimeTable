@@ -159,7 +159,7 @@ class NewUserPage(tk.Frame):
         c.execute('CREATE TABLE IF NOT EXISTS %s(username TEXT, unix INT, datestamp TEXT, '
                   'timestamp TEXT, reason TEXT)' % CURRENT_USER)
         conn.commit()
-        print('%s added' % CURRENT_USER)                                                                 # for debugging
+        print('%s added' % CURRENT_USER)                                                               
         self.controller.show_frame(TimeStamp)
 
 
@@ -237,7 +237,7 @@ class TimeStamp(tk.Frame):
         c.execute('INSERT INTO %s(username, unix, datestamp, timestamp, reason) '
                   'VALUES (?, ?, ?, ?, ?)' % CURRENT_USER, (CURRENT_USER, unix, datestamp, timestamp, reason))
         conn.commit()
-        print('Time Stamped!', reason)                                                              # for debugging
+        print('Time Stamped!', reason)                                                              
         time.sleep(.5)
         c.close()
         conn.close()
@@ -289,16 +289,14 @@ class ManualEntry(tk.Frame):
         dateMatch = re.match(r"\d\d\d\d-\d\d-\d\d", mDate)
         timeMatch = re.match(r"\d\d:\d\d:\d\d", mTime)
 
-        if dateMatch is not None and timeMatch is not None and reason != '':    # ## TEST THIS!!!!!!!!!!!!!!!!!!!!!!!!!!
+        if dateMatch is not None and timeMatch is not None and reason != '':    
             if reason == 'CLOCK OUT':
-                print(reason)
                 c.execute("SELECT reason from %s WHERE datestamp=?" % CURRENT_USER, (mDate,))
                 clock_out = c.fetchall()
-                print(clock_out)
-                if ('BREAK OUT',) and ('BREAK IN',) not in clock_out:                      # (if no breaks taken in a
-                    c.execute('INSERT INTO %s(username,datestamp, timestamp, reason) '  # day, creates null values 
-                              'VALUES (?, ?, ?, ?)' % CURRENT_USER,                     # for breaks; needed to
-                              (CURRENT_USER, mDate, None, 'BREAK OUT'))             # calculate hours later)
+                if ('BREAK OUT',) and ('BREAK IN',) not in clock_out:                      
+                    c.execute('INSERT INTO %s(username,datestamp, timestamp, reason) '  
+                              'VALUES (?, ?, ?, ?)' % CURRENT_USER,                    
+                              (CURRENT_USER, mDate, None, 'BREAK OUT'))            
                     c.execute('INSERT INTO %s(username,datestamp, timestamp, reason) '
                               'VALUES (?, ?, ?, ?)' % CURRENT_USER,
                               (CURRENT_USER, mDate, None, 'BREAK IN'))
@@ -396,7 +394,7 @@ class Reports(tk.Frame):
             for i in range(delta.days + 1):     # creates a list of all dates between the two dates specified in Reports
                 day_list.append(str(startDate + timedelta(days=i)))
 
-            for a in day_list:  # creates a dict where dates are keys and data is lists of tuples
+            for a in day_list:  
 
                 c.execute("SELECT timestamp, reason from %s WHERE datestamp=?" % CURRENT_USER, (a,))
                 list2 = c.fetchall()
@@ -422,7 +420,7 @@ class Reports(tk.Frame):
                             b_out = datetime.datetime(1, 1, 1)
                             bout_list.append(b_out)
 
-                raw_break = [a - b for a, b in zip(bin_list, bout_list)]       # all of this is to account for multiple breaks in the same day
+                raw_break = [a - b for a, b in zip(bin_list, bout_list)]       # to account for multiple breaks in the same day
                 better_break_list = []
                 best_break_list = []
 
@@ -485,58 +483,20 @@ conn.close()
 # TO DO:
 #
 # menu bar
-# Reports.getReports: data should be displayed in new pop up window rather than the main window
+# 
+# make .exe
 #
-# security:
-#   regex for username and password entry
-#   research other security risks
+# make everything look better
 #
-#   more feedback to user: confirmation messages, options if things didn't work as expected etc.
-#   error handling
+# regex for username and password entry
+#   
+# more feedback to user: confirmation messages, options if things didn't work as expected etc.
 #
 # wish list:
 #   store all ee data, make this a small business multipurpose program (time clock, ee database, what else?)
-#   accessing/printing data, make it easy for the user
-#   admin ability to delete user, change data if an employee makes a mistake in time entry
+#   print result of date range query
+#   admin account: ability to delete users, change data if an employee makes a mistake in time entry
 #   compatibility with CP?
 #   remote clock-in/out devices? Rpi?
 #
 ########################################################################################################################
-
-
-# SQLite common commands (for development)
-#
-# c.execute('DELETE FROM login_data WHERE username = ?', ('ERICKA',))
-# print('Ericka deleted')
-# conn.commit()
-
-
-# '''                                ___,,___
-#                                 ,d8888888888b,_
-#                             _,d889'        8888b,
-#                         _,d8888'          8888888b,
-#                     _,d8889'           888888888888b,_
-#                 _,d8889'             888888889'688888, /b
-#             _,d8889'               88888889'     `6888d 6,_
-#          ,d88886'              _d888889'           ,8d  b888b,  d\
-#        ,d889'888,             d8889'               8d   9888888Y  )
-#      ,d889'   `88,          ,d88'                 d8    `,88aa88 9
-#     d889'      `88,        ,88'                   `8b     )88a88'
-#    d88'         `88       ,88                   88 `8b,_ d888888
-#   d89            88,      88                  d888b  `88`_  8888
-#   88             88b      88                 d888888 8: (6`) 88')
-#   88             8888b,   88                d888aaa8888, `   'Y'
-#   88b          ,888888888888                 `d88aa `88888b ,d8
-#   `88b       ,88886 `88888888                 d88a  d8a88` `8/
-#    `q8b    ,88'`888  `888'"`88          d8b  d8888,` 88/ 9)_6
-#      88  ,88"   `88  88p    `88        d88888888888bd8( Z~/
-#      88b 8p      88 68'      `88      88888888' `688889`
-#      `88 8        `8 8,       `88    888 `8888,   `qp'
-#        8 8,        `q 8b       `88  88"    `888b
-#        q8 8b        "888        `8888'
-#         "888                     `q88b
-#                                   "888'
-# '''
-
-
-# #####################################################################################################################
